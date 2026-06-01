@@ -83,6 +83,7 @@ function PostCallList() {
     } catch (error) {
 
       console.error(error);
+
       setLoading(false);
 
     }
@@ -98,7 +99,6 @@ function PostCallList() {
       <div style={{ marginBottom: "20px" }}>
 
         {/* Summary */}
-
         <label>
           <input
             type="checkbox"
@@ -117,7 +117,6 @@ function PostCallList() {
 
 
         {/* Call Stage */}
-
         <label>
           <input
             type="checkbox"
@@ -136,7 +135,6 @@ function PostCallList() {
 
 
         {/* Lead Quality */}
-
         <label>
           <input
             type="checkbox"
@@ -155,7 +153,6 @@ function PostCallList() {
 
 
         {/* Objections */}
-
         <label>
           <input
             type="checkbox"
@@ -174,7 +171,6 @@ function PostCallList() {
 
 
         {/* Risks */}
-
         <label>
           <input
             type="checkbox"
@@ -193,7 +189,6 @@ function PostCallList() {
 
 
         {/* Buyer Signals */}
-
         <label>
           <input
             type="checkbox"
@@ -212,7 +207,6 @@ function PostCallList() {
 
 
         {/* Transcript */}
-
         <label>
           <input
             type="checkbox"
@@ -227,8 +221,6 @@ function PostCallList() {
           Transcript
         </label>
 
-        <br />
-
       </div>
 
 
@@ -239,7 +231,6 @@ function PostCallList() {
 
         <div
           key={call.id}
-
           style={{
             border: "1px solid gray",
             padding: "20px",
@@ -270,15 +261,14 @@ function PostCallList() {
             <strong>Status:</strong> {call.analysisStatus}
           </p>
 
-
           <button
-        onClick={() => analyzeCall(call)}
-        disabled={loading}
-      >
+            onClick={() => analyzeCall(call)}
+            disabled={loading}
+          >
 
-        {loading ? "Analyzing..." : "Analyze Call"}
+            {loading ? "Analyzing..." : "Analyze Call"}
 
-      </button>
+          </button>
 
         </div>
 
@@ -294,53 +284,151 @@ function PostCallList() {
             padding: "20px",
             marginTop: "30px",
             borderRadius: "8px",
-          }}>
-        
+          }}
+        >
 
           <h2>Analysis Result</h2>
 
-          {/* Deal Probability Card */}
 
-          {analysis.deal_probability && (
+          {/* Dashboard Row */}
 
-  <div
-    style={{
-      border: "1px solid #ccc",
-      borderRadius: "12px",
-      padding: "20px",
-      marginBottom: "20px",
-      boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-      backgroundColor: "#f9f9f9",
-      width: "250px",
-    }}
-  >
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              flexWrap: "wrap",
+              marginBottom: "30px",
+            }}
+          >
 
-    <p
-      style={{
-        fontSize: "18px",
-        fontWeight: "bold",
-        marginBottom: "10px",
-      }}
-    >
-      Deal Probability
-    </p>
+            {/* Deal Probability Card */}
 
-    <p
-      style={{
-        fontSize: "40px",
-        fontWeight: "bold",
-        color: "green",
-      }}
-    >
-      {analysis.deal_probability}%
-    </p>
+            {analysis.deal_probability && (
 
-  </div>
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  marginBottom: "20px",
+                  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+                  backgroundColor: "#f9f9f9",
+                  flex: "1",
+                  minWidth: "250px",
+                }}
+              >
 
-)}
+                <p
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    marginBottom: "10px",
+                    color: "black",
+                  }}
+                >
+                  Deal Probability
+                </p>
 
-          
+                <p
+                  style={{
+                    fontSize: "40px",
+                    fontWeight: "bold",
+                    color: "green",
+                  }}
+                >
+                  {analysis.deal_probability}%
+                </p>
 
+              </div>
+
+            )}
+
+
+            {/* Lead Quality Card */}
+
+            {analysis.lead_quality && (
+
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  marginBottom: "20px",
+                  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+                  backgroundColor: "#f9f9f9",
+                  flex: "1",
+                  minWidth: "250px",
+                }}
+              >
+
+                <p
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    marginBottom: "10px",
+                    color: "black",
+                  }}
+                >
+                  Lead Quality
+                </p>
+
+                <p
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "blue",
+                  }}
+                >
+                  {analysis.lead_quality}
+                </p>
+
+              </div>
+
+            )}
+
+
+            {/* Agent Performance Card */}
+
+            {analysis.agent_score && (
+
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  marginBottom: "20px",
+                  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+                  backgroundColor: "#f9f9f9",
+                  flex: "1",
+                  minWidth: "300px",
+                }}
+              >
+
+                <p
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    marginBottom: "10px",
+                    color: "black",
+                  }}
+                >
+                  Agent Performance
+                </p>
+
+                <div
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    color: "black",
+                  }}
+                >
+                  {analysis.agent_score}
+                </div>
+
+              </div>
+
+            )}
+
+          </div>
 
 
 
@@ -360,6 +448,7 @@ function PostCallList() {
               <hr />
 
             </div>
+
           )}
 
 
@@ -420,6 +509,7 @@ function PostCallList() {
               <hr />
 
             </div>
+
           )}
 
 
@@ -442,6 +532,7 @@ function PostCallList() {
               <hr />
 
             </div>
+
           )}
 
 
@@ -464,6 +555,7 @@ function PostCallList() {
               <hr />
 
             </div>
+
           )}
 
 

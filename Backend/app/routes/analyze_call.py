@@ -37,7 +37,8 @@ def analyze_call(call: CallRequest):
         "buyer_signals": [],
         "call_stage_analysis": "",
         "deal_probability": "",
-        "lead_quality": ""
+        "lead_quality": "",
+        "agent_score": ""
     }
 
     result = app_graph.invoke(initial_state)
@@ -62,6 +63,8 @@ def analyze_call(call: CallRequest):
         "risk_flags": result["risks"],
 
         "buyer_signals": result["buyer_signals"],
+
+        "agent_score": result["agent_score"],
 
         "deal_probability": result["deal_probability"]
     }

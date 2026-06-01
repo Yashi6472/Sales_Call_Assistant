@@ -7,7 +7,9 @@ from app.agents.risk_agent import analyze_risks
 from app.agents.buyer_intent_agent import analyze_buyer_intent
 from app.agents.summary_agent import generate_summary
 from app.agents.stage_agent import analyze_stage
-
+from app.agents.agent_scoring_agent import (
+    analyze_agent_score
+)
 from app.agents.lead_quality_agent import (
     analyze_lead_quality
 )
@@ -27,6 +29,7 @@ class GraphState(TypedDict):
     call_stage_analysis: str
     lead_quality: str
     deal_probability: str
+    agent_score: str
 
 
 # Summary Agent
@@ -131,6 +134,15 @@ def buyer_intent_node(state):
         "buyer_signals": buyer_signals
     }
 
+def agent_score_node(state):
+
+    score = analyze_agent_score(
+        state["transcript"]
+    )
+
+    return {
+        "agent_score": score
+    }
 
 # Build Graph
 graph = StateGraph(GraphState)
@@ -155,6 +167,11 @@ graph.add_node("risk", risk_node)
 
 graph.add_node("buyer_intent", buyer_intent_node)
 
+graph.add_node(
+    "agent_score",
+    agent_score_node
+)
+
 
 # Entry Point
 graph.set_entry_point("summary")
@@ -178,6 +195,11 @@ graph.add_edge(
 
 graph.add_edge(
     "deal_probability",
+    "agent_score"
+)
+
+graph.add_edge(
+    "agent_score",
     END
 )
 
