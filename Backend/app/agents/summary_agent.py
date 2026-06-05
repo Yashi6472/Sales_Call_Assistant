@@ -1,17 +1,7 @@
-from app.llm import llm
+def generate_summary(transcript, prompt=None):
 
-def generate_summary(
-    call,
-    custom_prompt
-):
+    return f"""
+Call Summary:
 
-    prompt = f"""
-    {custom_prompt}
-
-    Call Data:
-    {call}
-    """
-
-    response = llm.invoke(prompt)
-
-    return response
+{transcript[:500]}
+"""

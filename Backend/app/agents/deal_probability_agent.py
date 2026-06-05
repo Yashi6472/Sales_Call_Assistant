@@ -1,30 +1,22 @@
-from app.llm import llm
-
 def analyze_deal_probability(transcript):
 
-    prompt = f"""
-    You are a sales AI system.
+    transcript_lower = transcript.lower()
 
-    Analyze this transcript and estimate
-    the probability of this deal closing.
+    score = 0
 
-    Return ONLY a single integer number.
+    positive_words = [
+        "interested",
+        "site visit",
+        "booking",
+        "purchase",
+        "budget",
+        "loan approved"
+    ]
 
-    Example:
-    82
+    for word in positive_words:
+        if word in transcript_lower:
+            score += 15
 
-    Do NOT explain.
-    Do NOT write sentences.
-    Do NOT write percentage symbol.
+    probability = min(score, 100)
 
-    Transcript:
-    {transcript}
-    """
-
-    response = llm.invoke(prompt)
-
-    cleaned = ''.join(
-        filter(str.isdigit, response)
-    )
-
-    return cleaned if cleaned else "0"
+    return probability

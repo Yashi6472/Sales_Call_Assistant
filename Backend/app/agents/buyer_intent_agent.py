@@ -1,17 +1,25 @@
-from app.llm import llm
+def analyze_buyer_intent(transcript, prompt=None):
 
-def analyze_buyer_intent(
-    transcript,
-    custom_prompt
-):
+    transcript_lower = transcript.lower()
 
-    prompt = f"""
-    {custom_prompt}
+    signals = []
 
-    Transcript:
-    {transcript}
-    """
+    keywords = [
+        "price",
+        "budget",
+        "loan",
+        "emi",
+        "site visit",
+        "booking",
+        "interested",
+        "purchase"
+    ]
 
-    response = llm.invoke(prompt)
+    for keyword in keywords:
+        if keyword in transcript_lower:
+            signals.append(f"Customer mentioned {keyword}")
 
-    return response.split("\n")
+    if len(signals) == 0:
+        signals.append("No strong buyer intent detected")
+
+    return signals

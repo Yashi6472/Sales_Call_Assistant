@@ -1,19 +1,24 @@
-from app.llm import llm
+def analyze_objections(transcript, prompt=None):
 
-def analyze_objections(
-    transcript,
-    custom_prompt
-):
+    transcript_lower = transcript.lower()
 
-    prompt = f"""
-    {custom_prompt}
+    objections = []
 
-    Transcript:
-    {transcript}
-    """
+    keywords = [
+        "expensive",
+        "high price",
+        "not sure",
+        "need time",
+        "loan",
+        "location issue",
+        "small rooms"
+    ]
 
-    response = llm.invoke(prompt)
+    for keyword in keywords:
+        if keyword in transcript_lower:
+            objections.append(f"Customer objection: {keyword}")
 
+    if len(objections) == 0:
+        objections.append("No objections found")
 
-
-    return response.split("\n")
+    return objections

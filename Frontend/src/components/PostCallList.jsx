@@ -16,6 +16,9 @@ function PostCallList() {
     risks: true,
     buyerSignals: true,
     transcript: true,
+    dealProbability: true,
+    bant: true,
+    agentScore: true,
   });
 
   const [prompts, setPrompts] = useState({
@@ -27,6 +30,8 @@ function PostCallList() {
     objections: "Find customer objections",
 
     risks: "Detect risky signals",
+
+    bant: "Analyze call using BANT framework",
 
     agentScore: "Evaluate real estate sales agent performance",
 
@@ -88,6 +93,8 @@ function PostCallList() {
       console.log(data);
 
       setAnalysis(data);
+
+      console.log("Analysis Response:", data);
 
       setLoading(false);
 
@@ -204,7 +211,7 @@ function PostCallList() {
         <br />
 
 
-        {/* Buyer Signals */}
+        {/* Buyer Intent */}
 
         <label>
           <input
@@ -237,6 +244,63 @@ function PostCallList() {
             }
           />
           Transcript
+        </label>
+
+        <br />
+
+
+        {/* BANT */}
+
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedModules.bant}
+            onChange={() =>
+              setSelectedModules({
+                ...selectedModules,
+                bant: !selectedModules.bant,
+              })
+            }
+          />
+          BANT Analysis
+        </label>
+
+        <br />
+
+
+        {/* Deal Probability */}
+
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedModules.dealProbability}
+            onChange={() =>
+              setSelectedModules({
+                ...selectedModules,
+                dealProbability: !selectedModules.dealProbability,
+              })
+            }
+          />
+          Deal Probability
+        </label>
+
+        <br />
+
+
+        {/* Agent Score */}
+
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedModules.agentScore}
+            onChange={() =>
+              setSelectedModules({
+                ...selectedModules,
+                agentScore: !selectedModules.agentScore,
+              })
+            }
+          />
+          Agent Score
         </label>
 
       </div>
@@ -316,6 +380,23 @@ function PostCallList() {
         <br /><br />
 
 
+        <h3>BANT Prompt</h3>
+
+        <textarea
+          rows={4}
+          cols={80}
+          value={prompts.bant}
+          onChange={(e) =>
+            setPrompts({
+              ...prompts,
+              bant: e.target.value,
+            })
+          }
+        />
+
+        <br /><br />
+
+
         <h3>Agent Score Prompt</h3>
 
         <textarea
@@ -336,7 +417,9 @@ function PostCallList() {
       {/* Completed Calls */}
 
       <h2>Completed Calls</h2>
+
       <p>Total Calls: {calls.length}</p>
+
       {calls.map((call) => (
 
         <div
@@ -385,228 +468,286 @@ function PostCallList() {
       ))}
 
 
+      {/* Analysis Result */}
+
       {analysis && (
-
-  <div
-    style={{
-      border: "2px solid blue",
-      padding: "20px",
-      marginTop: "30px",
-      borderRadius: "8px",
-    }}
-  >
-
-    <h2>Analysis Result</h2>
-
-    {/* Summary */}
-
-    {analysis.summary && (
-
-      <div>
-
-        <p>
-          <strong>Summary:</strong>
-        </p>
-
-        <p>{analysis.summary}</p>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Call Stage */}
-
-    {analysis.call_stage_analysis && (
-
-      <div>
-
-        <p>
-          <strong>Call Stage:</strong>
-        </p>
-
-        <p>{analysis.call_stage_analysis}</p>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Lead Quality */}
-
-    {analysis.lead_quality && (
-
-      <div>
-
-        <p>
-          <strong>Lead Quality:</strong>
-        </p>
-
-        <p>{analysis.lead_quality}</p>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Deal Probability */}
-
-    {analysis.deal_probability && (
-
-      <div>
-
-        <p>
-          <strong>Deal Probability:</strong>
-        </p>
-
-        <p>{analysis.deal_probability}%</p>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Objections */}
-
-    {analysis?.objections?.length > 0 && (
-
-      <div>
-
-        <p>
-          <strong>Objections:</strong>
-        </p>
-
-        <ul>
-
-          {analysis.objections.map((obj, index) => (
-
-            <li key={index}>{obj}</li>
-
-          ))}
-
-        </ul>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Risks */}
-
-    {analysis?.risks?.length > 0 && (
-
-      <div>
-
-        <p>
-          <strong>Risks:</strong>
-        </p>
-
-        <ul>
-
-          {analysis.risks.map((risk, index) => (
-
-            <li key={index}>{risk}</li>
-
-          ))}
-
-        </ul>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Buyer Signals */}
-
-    {analysis?.buyer_signals?.length > 0 && (
-
-      <div>
-
-        <p>
-          <strong>Buyer Signals:</strong>
-        </p>
-
-        <ul>
-
-          {analysis.buyer_signals.map((signal, index) => (
-
-            <li key={index}>{signal}</li>
-
-          ))}
-
-        </ul>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Agent Score */}
-
-    {analysis.agent_score && (
-
-      <div>
-
-        <p>
-          <strong>Agent Score:</strong>
-        </p>
-
-        <p>{analysis.agent_score}</p>
-
-        <hr />
-
-      </div>
-
-    )}
-
-
-    {/* Transcript */}
-
-    {analysis.transcript && (
-
-      <div>
-
-        <p>
-          <strong>Transcript:</strong>
-        </p>
 
         <div
           style={{
-            backgroundColor: "#f4f4f4",
-            color: "black",
-            padding: "10px",
+            border: "2px solid blue",
+            padding: "20px",
+            marginTop: "30px",
             borderRadius: "8px",
-            whiteSpace: "pre-wrap",
           }}
         >
 
-          {analysis.transcript}
+          <h2>Analysis Result</h2>
+
+
+          {/* Summary */}
+
+          {analysis.summary &&
+          analysis.summary !== "Summary module skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Summary:</strong>
+              </p>
+
+              <p>{analysis.summary}</p>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* Call Stage */}
+
+          {analysis.call_stage_analysis &&
+          analysis.call_stage_analysis !== "Stage module skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Call Stage:</strong>
+              </p>
+
+              <p>{analysis.call_stage_analysis}</p>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* Lead Quality */}
+
+          {analysis.lead_quality &&
+          analysis.lead_quality !== "Lead quality module skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Lead Quality:</strong>
+              </p>
+
+              <p>{analysis.lead_quality}</p>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* Deal Probability */}
+
+          {analysis.deal_probability &&
+          analysis.deal_probability !== "Deal probability skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Deal Probability:</strong>
+              </p>
+
+              <p>
+              {typeof analysis.deal_probability === "number"
+                ? `${analysis.deal_probability}%`
+                : analysis.deal_probability}
+            </p>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* Objections */}
+
+          {analysis?.objections?.length > 0 &&
+          analysis.objections[0] !== "Objection module skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Objections:</strong>
+              </p>
+
+              <ul>
+
+                {analysis.objections.map((obj, index) => (
+
+                  <li key={index}>{obj}</li>
+
+                ))}
+
+              </ul>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* Risks */}
+
+          {analysis?.risks?.length > 0 &&
+          analysis.risks[0] !== "Risk module skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Risks:</strong>
+              </p>
+
+              <ul>
+
+                {analysis.risks.map((risk, index) => (
+
+                  <li key={index}>{risk}</li>
+
+                ))}
+
+              </ul>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* Buyer Signals */}
+
+          {analysis?.buyer_signals?.length > 0 &&
+          analysis.buyer_signals[0] !== "Buyer intent skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Buyer Signals:</strong>
+              </p>
+
+              <ul>
+
+                {analysis.buyer_signals.map((signal, index) => (
+
+                  <li key={index}>{signal}</li>
+
+                ))}
+
+              </ul>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          {/* BANT */}
+
+          {analysis.bant_analysis &&
+          analysis.bant_analysis !== "BANT analysis skipped" && (
+
+            <div>
+
+              <p>
+                <strong>BANT Analysis:</strong>
+              </p>
+
+              <div
+                style={{
+                  backgroundColor: "#f4f4f4",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  color: "black",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+
+                {analysis.bant_analysis}
+
+              </div>
+
+              <hr />
+
+            </div>
+
+          )}
+
+
+          
+          {/* Agent Score */}
+
+          {analysis.agent_score &&
+          analysis.agent_score !== "Agent scoring skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Agent Score:</strong>
+              </p>
+
+              {typeof analysis.agent_score === "object" ? (
+                <>
+                  <p>
+                    Score: {analysis.agent_score.score}
+                  </p>
+
+                  <p>
+                    Rating: {analysis.agent_score.rating}
+                  </p>
+                </>
+              ) : (
+                <p>{analysis.agent_score}</p>
+              )}
+
+              <hr />
+
+            </div>
+
+          )}
+
+          {/* Transcript */}
+
+          {analysis.transcript &&
+          analysis.transcript !== "Transcript skipped" && (
+
+            <div>
+
+              <p>
+                <strong>Transcript:</strong>
+              </p>
+
+              <div
+                style={{
+                  backgroundColor: "#f4f4f4",
+                  color: "black",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+
+                {analysis.transcript}
+
+              </div>
+
+            </div>
+
+          )}
 
         </div>
 
-      </div>
-
-    )}
-
-  </div>
-
-)}
-
-
+      )}
 
     </div>
 

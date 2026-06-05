@@ -16,6 +16,7 @@ class CallRequest(BaseModel):
     leadQuality: str
     callSummary: str
     analysisStatus: str
+
     selectedModules: dict
     prompts: dict
 
@@ -26,21 +27,11 @@ def analyze_call(call: CallRequest):
     transcript = sample_transcripts.get(call.id, "")
 
     initial_state = {
-        "call": call.dict(),
-        "transcript":
-            transcript
-            if call.selectedModules["transcript"]
-            else "",
-        "selectedModules": call.selectedModules,
-        "summary": "",
-        "objections": [],
-        "risks": [],
-        "buyer_signals": [],
-        "call_stage_analysis": "",
-        "deal_probability": "",
-        "lead_quality": "",
-        "agent_score": "",
-        "prompts": call.prompts
+        "transcript": transcript,
+
+        "selected_modules": call.selectedModules,
+
+        "prompts": call.prompts,
     }
 
     result = app_graph.invoke(initial_state)
@@ -68,5 +59,7 @@ def analyze_call(call: CallRequest):
 
         "agent_score": result["agent_score"],
 
-        "deal_probability": result["deal_probability"]
+        "deal_probability": result["deal_probability"],
+
+        "bant_analysis": result["bant_analysis"]
     }

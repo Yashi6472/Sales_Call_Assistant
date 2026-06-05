@@ -1,17 +1,22 @@
-from app.llm import llm
+def analyze_agent_score(transcript, prompt=None):
 
-def analyze_agent_score(
-    transcript,
-    custom_prompt
-):
+    transcript_lower = transcript.lower()
 
-    prompt = f"""
-    {custom_prompt}
+    score = 50
 
-    Transcript:
-    {transcript}
-    """
+    positive_keywords = [
+        "thank you",
+        "explained",
+        "help",
+        "site visit",
+        "details"
+    ]
 
-    response = llm.invoke(prompt)
+    for keyword in positive_keywords:
+        if keyword in transcript_lower:
+            score += 10
 
-    return response
+    if score > 100:
+        score = 100
+
+    return f"{score}/100"

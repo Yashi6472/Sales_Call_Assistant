@@ -1,17 +1,24 @@
-from app.llm import llm
+def analyze_risks(transcript, prompt=None):
 
-def analyze_risks(
-    transcript,
-    custom_prompt
-):
+    transcript_lower = transcript.lower()
 
-    prompt = f"""
-    {custom_prompt}
+    risks = []
 
-    Transcript:
-    {transcript}
-    """
+    keywords = [
+        "too expensive",
+        "not interested",
+        "later",
+        "need time",
+        "other project",
+        "high price",
+        "loan issue"
+    ]
 
-    response = llm.invoke(prompt)
+    for keyword in keywords:
+        if keyword in transcript_lower:
+            risks.append(f"Risk detected: {keyword}")
 
-    return response.split("\n")
+    if len(risks) == 0:
+        risks.append("No major risks detected")
+
+    return risks

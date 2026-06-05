@@ -2,38 +2,32 @@ from typing import TypedDict
 
 from langgraph.graph import StateGraph, END
 
+from app.agents.summary_agent import generate_summary
+from app.agents.stage_agent import analyze_stage
+from app.agents.lead_quality_agent import analyze_lead_quality
 from app.agents.objection_agent import analyze_objections
 from app.agents.risk_agent import analyze_risks
 from app.agents.buyer_intent_agent import analyze_buyer_intent
-from app.agents.summary_agent import generate_summary
-from app.agents.stage_agent import analyze_stage
+from app.agents.agent_scoring_agent import analyze_agent_score
+from app.agents.bant_agent import analyze_bant
+from app.agents.deal_probability_agent import analyze_deal_probability
+from app.agents.property_sales_scoring_agent import analyze_property_sales_score
 
-from app.agents.agent_scoring_agent import (
-    analyze_agent_score
-)
-
-from app.agents.lead_quality_agent import (
-    analyze_lead_quality
-)
-
-from app.agents.deal_probability_agent import (
-    analyze_deal_probability
-)
-
-
-# Shared Graph State
+# STATE
 
 class GraphState(TypedDict):
 
-    call: dict
-
     transcript: str
 
-    selectedModules: dict
+    selected_modules: dict
 
     prompts: dict
 
     summary: str
+
+    call_stage_analysis: str
+
+    lead_quality: str
 
     objections: list
 
@@ -41,27 +35,25 @@ class GraphState(TypedDict):
 
     buyer_signals: list
 
-    call_stage_analysis: str
+    bant_analysis: str
 
-    lead_quality: str
-
-    deal_probability: str
+    deal_probability: int
 
     agent_score: str
 
 
-# Summary Node
+# NODES
 
 def summary_node(state):
 
-    if not state["selectedModules"]["summary"]:
+    if not state["selected_modules"]["summary"]:
 
         return {
             "summary": "Summary module skipped"
         }
 
     summary = generate_summary(
-        state["call"],
+        state["transcript"],
         state["prompts"]["summary"]
     )
 
@@ -70,50 +62,33 @@ def summary_node(state):
     }
 
 
-# Deal Probability Node
+def stage_node(state):
 
-def deal_probability_node(state):
+    if not state["selected_modules"]["callStage"]:
 
-    probability = analyze_deal_probability(
+        return {
+            "call_stage_analysis": "Stage module skipped"
+        }
+
+    stage = analyze_stage(
         state["transcript"]
     )
 
     return {
-        "deal_probability": probability
+        "call_stage_analysis": stage
     }
 
-
-# Stage Analysis Node
-
-def stage_node(state):
-
-    if not state["selectedModules"]["callStage"]:
-
-        return {
-            "call_stage_analysis": ""
-        }
-
-    stage_analysis = analyze_stage(
-        state["call"]
-    )
-
-    return {
-        "call_stage_analysis": stage_analysis
-    }
-
-
-# Lead Quality Node
 
 def lead_quality_node(state):
 
-    if not state["selectedModules"]["leadQuality"]:
+    if not state["selected_modules"]["leadQuality"]:
 
         return {
-            "lead_quality": ""
+            "lead_quality": "Lead quality module skipped"
         }
 
     quality = analyze_lead_quality(
-        state["call"]
+        state["transcript"]
     )
 
     return {
@@ -121,14 +96,12 @@ def lead_quality_node(state):
     }
 
 
-# Objection Node
-
 def objection_node(state):
 
-    if not state["selectedModules"]["objections"]:
+    if not state["selected_modules"]["objections"]:
 
         return {
-            "objections": []
+            "objections": ["Objection module skipped"]
         }
 
     objections = analyze_objections(
@@ -141,14 +114,12 @@ def objection_node(state):
     }
 
 
-# Risk Node
-
 def risk_node(state):
 
-    if not state["selectedModules"]["risks"]:
+    if not state["selected_modules"]["risks"]:
 
         return {
-            "risks": []
+            "risks": ["Risk module skipped"]
         }
 
     risks = analyze_risks(
@@ -161,31 +132,67 @@ def risk_node(state):
     }
 
 
-# Buyer Intent Node
-
 def buyer_intent_node(state):
 
-    if not state["selectedModules"]["buyerSignals"]:
+    if not state["selected_modules"]["buyerSignals"]:
 
         return {
-            "buyer_signals": []
+            "buyer_signals": ["Buyer intent skipped"]
         }
 
-    buyer_signals = analyze_buyer_intent(
+    signals = analyze_buyer_intent(
         state["transcript"],
         state["prompts"]["buyerIntent"]
     )
 
     return {
-        "buyer_signals": buyer_signals
+        "buyer_signals": signals
     }
 
 
-# Agent Score Node
+def bant_node(state):
+
+    if not state["selected_modules"]["bant"]:
+
+        return {
+            "bant_analysis": "BANT analysis skipped"
+        }
+
+    bant_result = analyze_bant(
+        state["transcript"]
+    )
+
+    return {
+        "bant_analysis": bant_result
+    }
+
+
+def deal_probability_node(state):
+
+    if not state["selected_modules"]["dealProbability"]:
+
+        return {
+            "deal_probability": 0
+        }
+
+    probability = analyze_deal_probability(
+        state["bant_analysis"]
+    )
+
+    return {
+        "deal_probability": probability
+    }
+
 
 def agent_score_node(state):
 
-    score = analyze_agent_score(
+    if not state["selected_modules"]["agentScore"]:
+
+        return {
+            "agent_score": "Agent scoring skipped"
+        }
+
+    score = analyze_property_sales_score(
         state["transcript"],
         state["prompts"]["agentScore"]
     )
@@ -195,96 +202,58 @@ def agent_score_node(state):
     }
 
 
-# Build Graph
+# GRAPH
 
 graph = StateGraph(GraphState)
 
 
-# Add Nodes
+# ADD NODES
 
 graph.add_node("summary", summary_node)
 
 graph.add_node("stage", stage_node)
 
-graph.add_node(
-    "deal_probability",
-    deal_probability_node
-)
+graph.add_node("lead_quality", lead_quality_node)
 
-graph.add_node(
-    "lead_quality",
-    lead_quality_node
-)
+graph.add_node("objection", objection_node)
 
-graph.add_node(
-    "objection",
-    objection_node
-)
+graph.add_node("risk", risk_node)
 
-graph.add_node(
-    "risk",
-    risk_node
-)
+graph.add_node("buyer_intent", buyer_intent_node)
 
-graph.add_node(
-    "buyer_intent",
-    buyer_intent_node
-)
+graph.add_node("bant", bant_node)
 
-graph.add_node(
-    "agent_score",
-    agent_score_node
-)
+graph.add_node("deal_probability", deal_probability_node)
+
+graph.add_node("agent_score", agent_score_node)
 
 
-# Entry Point
+# ENTRY
 
 graph.set_entry_point("summary")
 
 
-# Workflow Edges
+# EDGES
 
-graph.add_edge(
-    "summary",
-    "stage"
-)
+graph.add_edge("summary", "stage")
 
-graph.add_edge(
-    "stage",
-    "lead_quality"
-)
+graph.add_edge("stage", "lead_quality")
 
-graph.add_edge(
-    "lead_quality",
-    "objection"
-)
+graph.add_edge("lead_quality", "objection")
 
-graph.add_edge(
-    "objection",
-    "risk"
-)
+graph.add_edge("objection", "risk")
 
-graph.add_edge(
-    "risk",
-    "buyer_intent"
-)
+graph.add_edge("risk", "buyer_intent")
 
-graph.add_edge(
-    "buyer_intent",
-    "deal_probability"
-)
+graph.add_edge("buyer_intent", "bant")
 
-graph.add_edge(
-    "deal_probability",
-    "agent_score"
-)
+graph.add_edge("bant", "deal_probability")
 
-graph.add_edge(
-    "agent_score",
-    END
-)
+graph.add_edge("deal_probability", "agent_score")
+
+graph.add_edge("agent_score", END)
 
 
-# Compile Graph
+# COMPILE
 
 app_graph = graph.compile()

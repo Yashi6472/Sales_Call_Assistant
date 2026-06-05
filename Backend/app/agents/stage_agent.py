@@ -1,6 +1,18 @@
-def analyze_stage(call):
+def analyze_stage(transcript):
 
-    return (
-        f"{call['leadName']} is currently "
-        f"in {call['leadStage']} stage"
-    )
+    transcript_lower = transcript.lower()
+
+    if "site visit" in transcript_lower:
+        return "Site Visit Stage"
+
+    elif "application" in transcript_lower:
+        return "Application Stage"
+
+    elif "interested" in transcript_lower:
+        return "Interested Stage"
+
+    elif "negotiation" in transcript_lower:
+        return "Negotiation Stage"
+
+    else:
+        return "Initial Discussion Stage"
