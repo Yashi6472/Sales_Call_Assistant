@@ -17,6 +17,7 @@ class CallRequest(BaseModel):
     callSummary: str
     analysisStatus: str
     selectedModules: dict
+    prompts: dict
 
 
 @router.post("/api/analyze-call")
@@ -38,7 +39,8 @@ def analyze_call(call: CallRequest):
         "call_stage_analysis": "",
         "deal_probability": "",
         "lead_quality": "",
-        "agent_score": ""
+        "agent_score": "",
+        "prompts": call.prompts
     }
 
     result = app_graph.invoke(initial_state)

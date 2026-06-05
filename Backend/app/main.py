@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.post_calls import router as post_call_router
 from app.routes.analyze_call import router as analyze_router
+
 app = FastAPI()
 
 app.add_middleware(

@@ -1,26 +1,17 @@
 from app.llm import llm
 
-def analyze_buyer_intent(transcript):
+def analyze_buyer_intent(
+    transcript,
+    custom_prompt
+):
 
     prompt = f"""
-    You are a real estate sales analyst.
+    {custom_prompt}
 
-    Analyze this transcript.
-
-    Identify strong buyer intent signals.
-
-    Return 3 concise bullet points.
-    Do not add explanations.
-    Do not add headings.
-    Maximum 3 bullet points
     Transcript:
     {transcript}
     """
 
     response = llm.invoke(prompt)
 
-    return [
-    line.strip("- ").strip()
-    for line in response.split("\n")
-    if line.strip()
-]
+    return response.split("\n")

@@ -18,8 +18,23 @@ function PostCallList() {
     transcript: true,
   });
 
+  const [prompts, setPrompts] = useState({
+
+    summary: "Generate concise property sales summary",
+
+    buyerIntent: "Analyze buyer intent signals",
+
+    objections: "Find customer objections",
+
+    risks: "Detect risky signals",
+
+    agentScore: "Evaluate real estate sales agent performance",
+
+  });
+
 
   // Fetch Calls
+
   useEffect(() => {
 
     fetch("http://127.0.0.1:8000/api/post-calls")
@@ -43,16 +58,11 @@ function PostCallList() {
   }, []);
 
 
-
   // Analyze Call
+
   const analyzeCall = async (callData) => {
 
     setLoading(true);
-
-    console.log({
-      ...callData,
-      selectedModules,
-    });
 
     try {
 
@@ -68,6 +78,7 @@ function PostCallList() {
           body: JSON.stringify({
             ...callData,
             selectedModules,
+            prompts,
           }),
         }
       );
@@ -99,6 +110,7 @@ function PostCallList() {
       <div style={{ marginBottom: "20px" }}>
 
         {/* Summary */}
+
         <label>
           <input
             type="checkbox"
@@ -117,6 +129,7 @@ function PostCallList() {
 
 
         {/* Call Stage */}
+
         <label>
           <input
             type="checkbox"
@@ -135,6 +148,7 @@ function PostCallList() {
 
 
         {/* Lead Quality */}
+
         <label>
           <input
             type="checkbox"
@@ -153,6 +167,7 @@ function PostCallList() {
 
 
         {/* Objections */}
+
         <label>
           <input
             type="checkbox"
@@ -171,6 +186,7 @@ function PostCallList() {
 
 
         {/* Risks */}
+
         <label>
           <input
             type="checkbox"
@@ -189,6 +205,7 @@ function PostCallList() {
 
 
         {/* Buyer Signals */}
+
         <label>
           <input
             type="checkbox"
@@ -207,6 +224,7 @@ function PostCallList() {
 
 
         {/* Transcript */}
+
         <label>
           <input
             type="checkbox"
@@ -224,9 +242,101 @@ function PostCallList() {
       </div>
 
 
+      {/* Agent Prompts */}
+
+      <h2>Agent Prompts</h2>
+
+      <div style={{ marginBottom: "30px" }}>
+
+        <h3>Summary Prompt</h3>
+
+        <textarea
+          rows={4}
+          cols={80}
+          value={prompts.summary}
+          onChange={(e) =>
+            setPrompts({
+              ...prompts,
+              summary: e.target.value,
+            })
+          }
+        />
+
+        <br /><br />
+
+
+        <h3>Buyer Intent Prompt</h3>
+
+        <textarea
+          rows={4}
+          cols={80}
+          value={prompts.buyerIntent}
+          onChange={(e) =>
+            setPrompts({
+              ...prompts,
+              buyerIntent: e.target.value,
+            })
+          }
+        />
+
+        <br /><br />
+
+
+        <h3>Objections Prompt</h3>
+
+        <textarea
+          rows={4}
+          cols={80}
+          value={prompts.objections}
+          onChange={(e) =>
+            setPrompts({
+              ...prompts,
+              objections: e.target.value,
+            })
+          }
+        />
+
+        <br /><br />
+
+
+        <h3>Risks Prompt</h3>
+
+        <textarea
+          rows={4}
+          cols={80}
+          value={prompts.risks}
+          onChange={(e) =>
+            setPrompts({
+              ...prompts,
+              risks: e.target.value,
+            })
+          }
+        />
+
+        <br /><br />
+
+
+        <h3>Agent Score Prompt</h3>
+
+        <textarea
+          rows={6}
+          cols={80}
+          value={prompts.agentScore}
+          onChange={(e) =>
+            setPrompts({
+              ...prompts,
+              agentScore: e.target.value,
+            })
+          }
+        />
+
+      </div>
+
+
+      {/* Completed Calls */}
+
       <h2>Completed Calls</h2>
-
-
+      <p>Total Calls: {calls.length}</p>
       {calls.map((call) => (
 
         <div
@@ -275,321 +385,228 @@ function PostCallList() {
       ))}
 
 
-
       {analysis && (
+
+  <div
+    style={{
+      border: "2px solid blue",
+      padding: "20px",
+      marginTop: "30px",
+      borderRadius: "8px",
+    }}
+  >
+
+    <h2>Analysis Result</h2>
+
+    {/* Summary */}
+
+    {analysis.summary && (
+
+      <div>
+
+        <p>
+          <strong>Summary:</strong>
+        </p>
+
+        <p>{analysis.summary}</p>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Call Stage */}
+
+    {analysis.call_stage_analysis && (
+
+      <div>
+
+        <p>
+          <strong>Call Stage:</strong>
+        </p>
+
+        <p>{analysis.call_stage_analysis}</p>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Lead Quality */}
+
+    {analysis.lead_quality && (
+
+      <div>
+
+        <p>
+          <strong>Lead Quality:</strong>
+        </p>
+
+        <p>{analysis.lead_quality}</p>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Deal Probability */}
+
+    {analysis.deal_probability && (
+
+      <div>
+
+        <p>
+          <strong>Deal Probability:</strong>
+        </p>
+
+        <p>{analysis.deal_probability}%</p>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Objections */}
+
+    {analysis?.objections?.length > 0 && (
+
+      <div>
+
+        <p>
+          <strong>Objections:</strong>
+        </p>
+
+        <ul>
+
+          {analysis.objections.map((obj, index) => (
+
+            <li key={index}>{obj}</li>
+
+          ))}
+
+        </ul>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Risks */}
+
+    {analysis?.risks?.length > 0 && (
+
+      <div>
+
+        <p>
+          <strong>Risks:</strong>
+        </p>
+
+        <ul>
+
+          {analysis.risks.map((risk, index) => (
+
+            <li key={index}>{risk}</li>
+
+          ))}
+
+        </ul>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Buyer Signals */}
+
+    {analysis?.buyer_signals?.length > 0 && (
+
+      <div>
+
+        <p>
+          <strong>Buyer Signals:</strong>
+        </p>
+
+        <ul>
+
+          {analysis.buyer_signals.map((signal, index) => (
+
+            <li key={index}>{signal}</li>
+
+          ))}
+
+        </ul>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Agent Score */}
+
+    {analysis.agent_score && (
+
+      <div>
+
+        <p>
+          <strong>Agent Score:</strong>
+        </p>
+
+        <p>{analysis.agent_score}</p>
+
+        <hr />
+
+      </div>
+
+    )}
+
+
+    {/* Transcript */}
+
+    {analysis.transcript && (
+
+      <div>
+
+        <p>
+          <strong>Transcript:</strong>
+        </p>
 
         <div
           style={{
-            border: "2px solid blue",
-            padding: "20px",
-            marginTop: "30px",
+            backgroundColor: "#f4f4f4",
+            color: "black",
+            padding: "10px",
             borderRadius: "8px",
+            whiteSpace: "pre-wrap",
           }}
         >
 
-          <h2>Analysis Result</h2>
-
-
-          {/* Dashboard Row */}
-
-          <div
-            style={{
-              display: "flex",
-              gap: "20px",
-              flexWrap: "wrap",
-              marginBottom: "30px",
-            }}
-          >
-
-            {/* Deal Probability Card */}
-
-            {analysis.deal_probability && (
-
-              <div
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  marginBottom: "20px",
-                  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-                  backgroundColor: "#f9f9f9",
-                  flex: "1",
-                  minWidth: "250px",
-                }}
-              >
-
-                <p
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                    color: "black",
-                  }}
-                >
-                  Deal Probability
-                </p>
-
-                <p
-                  style={{
-                    fontSize: "40px",
-                    fontWeight: "bold",
-                    color: "green",
-                  }}
-                >
-                  {analysis.deal_probability}%
-                </p>
-
-              </div>
-
-            )}
-
-
-            {/* Lead Quality Card */}
-
-            {analysis.lead_quality && (
-
-              <div
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  marginBottom: "20px",
-                  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-                  backgroundColor: "#f9f9f9",
-                  flex: "1",
-                  minWidth: "250px",
-                }}
-              >
-
-                <p
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                    color: "black",
-                  }}
-                >
-                  Lead Quality
-                </p>
-
-                <p
-                  style={{
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "blue",
-                  }}
-                >
-                  {analysis.lead_quality}
-                </p>
-
-              </div>
-
-            )}
-
-
-            {/* Agent Performance Card */}
-
-            {analysis.agent_score && (
-
-              <div
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  marginBottom: "20px",
-                  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-                  backgroundColor: "#f9f9f9",
-                  flex: "1",
-                  minWidth: "300px",
-                }}
-              >
-
-                <p
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                    color: "black",
-                  }}
-                >
-                  Agent Performance
-                </p>
-
-                <div
-                  style={{
-                    whiteSpace: "pre-wrap",
-                    color: "black",
-                  }}
-                >
-                  {analysis.agent_score}
-                </div>
-
-              </div>
-
-            )}
-
-          </div>
-
-
-
-          {/* Summary */}
-
-          {analysis.summary &&
-          analysis.summary !== "Summary module skipped" && (
-
-            <div>
-
-              <p>
-                <strong>Summary:</strong>
-              </p>
-
-              <p>{analysis.summary}</p>
-
-              <hr />
-
-            </div>
-
-          )}
-
-
-          {/* Call Stage */}
-
-          {analysis.call_stage_analysis && (
-
-            <div>
-
-              <p>
-                <strong>Call Stage:</strong>
-              </p>
-
-              <p>{analysis.call_stage_analysis}</p>
-
-              <hr />
-
-            </div>
-
-          )}
-
-
-          {/* Lead Quality */}
-
-          {analysis.lead_quality && (
-
-            <div>
-
-              <p>
-                <strong>Lead Quality:</strong>
-              </p>
-
-              <p>{analysis.lead_quality}</p>
-
-              <hr />
-
-            </div>
-
-          )}
-
-
-          {/* Objections */}
-
-          {analysis.objections.length > 0 && (
-
-            <div>
-
-              <p>
-                <strong>Objections:</strong>
-              </p>
-
-              <ul>
-                {analysis.objections.map((obj, index) => (
-                  <li key={index}>{obj}</li>
-                ))}
-              </ul>
-
-              <hr />
-
-            </div>
-
-          )}
-
-
-          {/* Risk Flags */}
-
-          {analysis.risk_flags.length > 0 && (
-
-            <div>
-
-              <p>
-                <strong>Risk Flags:</strong>
-              </p>
-
-              <ul>
-                {analysis.risk_flags.map((risk, index) => (
-                  <li key={index}>{risk}</li>
-                ))}
-              </ul>
-
-              <hr />
-
-            </div>
-
-          )}
-
-
-          {/* Buyer Signals */}
-
-          {analysis.buyer_signals.length > 0 && (
-
-            <div>
-
-              <p>
-                <strong>Buyer Signals:</strong>
-              </p>
-
-              <ul>
-                {analysis.buyer_signals.map((signal, index) => (
-                  <li key={index}>{signal}</li>
-                ))}
-              </ul>
-
-              <hr />
-
-            </div>
-
-          )}
-
-
-          {/* Transcript */}
-
-          {analysis.transcript && (
-
-            <div>
-
-              <p>
-                <strong>Transcript:</strong>
-              </p>
-
-              <div
-                style={{
-                  backgroundColor: "#f4f4f4",
-                  color: "black",
-                  padding: "10px",
-                  borderRadius: "8px",
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-
-                {analysis.transcript}
-
-              </div>
-
-            </div>
-
-          )}
+          {analysis.transcript}
 
         </div>
 
-      )}
+      </div>
+
+    )}
+
+  </div>
+
+)}
+
+
 
     </div>
 

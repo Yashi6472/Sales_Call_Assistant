@@ -1,21 +1,15 @@
 from app.llm import llm
 
-def generate_summary(call):
+def generate_summary(
+    call,
+    custom_prompt
+):
 
     prompt = f"""
-    You are an expert real estate sales analyst.
+    {custom_prompt}
 
-    Analyze this property buying discussion
-    and generate a concise sales summary.
-    return Maximum 3 bullet points
-    Lead Name:
-    {call['leadName']}
-
-    Lead Type:
-    {call['leadType']}
-
-    Call Summary:
-    {call['callSummary']}
+    Call Data:
+    {call}
     """
 
     response = llm.invoke(prompt)

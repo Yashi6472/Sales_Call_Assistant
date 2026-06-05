@@ -1,36 +1,16 @@
 from app.llm import llm
 
-def analyze_agent_score(transcript):
+def analyze_agent_score(
+    transcript,
+    custom_prompt
+):
 
     prompt = f"""
-        You are an expert real estate sales evaluator.
+    {custom_prompt}
 
-        Analyze how well the property sales agent handled the conversation.
-
-        Evaluate whether the agent properly asked important property-selling questions.
-
-        Check for:
-
-        - Budget discussion
-        - Property location preference
-        - BHK preference
-        - Investment vs self-use
-        - Family requirements
-        - Timeline to buy
-        - Site visit offer
-        - Financing/EMI discussion
-        - Objection handling
-        - Closing attempt
-
-        Return STRICTLY only 3 most important missed Questions and that too shortly in bullet points. Do not add explanations. Do not add headings.:
-
-        Score: <number>(over all and not separately)
-
-        Missed Questions:
-        - Missed Questions explanation
-        - point
-
-"""
+    Transcript:
+    {transcript}
+    """
 
     response = llm.invoke(prompt)
 
